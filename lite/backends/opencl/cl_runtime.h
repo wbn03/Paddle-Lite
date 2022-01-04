@@ -103,11 +103,20 @@ class CLRuntime {
       LOG(ERROR) << "Invalid opencl device, CL_DEVICE_TYPE is None.";
       return false;
     }
-
     bool support_fp16 = support_half();
     is_device_avaliable_for_opencl_ =
         check_fp16_valid ? support_fp16 : is_device_avaliable_for_opencl_;
-    return is_device_avaliable_for_opencl_;
+
+    if (!is_device_avaliable_for_opencl_){
+      return false;
+    }
+
+    // exclude PowerVR and UNKNOWN devices.
+    if (GetGpuType() == GpuType::IMAGINATION_POWERVR || GetGpuType() == GpuType::UNKNOWN) {
+      return false;
+    }
+
+    return true;
   }
 
   void set_auto_tune(lite_api::CLTuneMode tune_mode,
