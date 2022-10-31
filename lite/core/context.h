@@ -57,12 +57,8 @@ class Context;
 using HostContext = Context<TargetType::kHost>;
 using X86Context = Context<TargetType::kX86>;
 using ARMContext = Context<TargetType::kARM>;
-using NPUContext = Context<TargetType::kNPU>;
 using XPUContext = Context<TargetType::kXPU>;
 using OpenCLContext = Context<TargetType::kOpenCL>;
-using FPGAContext = Context<TargetType::kFPGA>;
-using BMContext = Context<TargetType::kBM>;
-using IntelFPGAContext = Context<TargetType::kIntelFPGA>;
 using NNAdapterContext = Context<TargetType::kNNAdapter>;
 using MTLContext = Context<TargetType::kMetal>;
 
@@ -76,46 +72,6 @@ class Context<TargetType::kHost> {
 
   std::string name() const { return "HostContext"; }
 };
-
-#ifdef LITE_WITH_NPU
-template <>
-class Context<TargetType::kNPU> {
- public:
-  // NOTE: InitOnce should only be used by ContextScheduler
-  void InitOnce() {}
-  void CopySharedTo(NPUContext* ctx) {}
-
-  NPUContext& operator=(const NPUContext& ctx) {}
-  std::string name() const { return "NPUContext"; }
-
-  static void SetSubgraphModelCacheDir(Scope* scope,
-                                       std::string subgraph_model_cache_dir) {
-    auto var = scope->Var("SUBGRAPH_MODEL_CACHE_DIR");
-    CHECK(var);
-    auto data = var->GetMutable<std::string>();
-    CHECK(data);
-    *data = subgraph_model_cache_dir;
-  }
-  static std::string SubgraphModelCacheDir(Scope* scope) {
-    auto var = scope->FindVar("SUBGRAPH_MODEL_CACHE_DIR");
-    if (!var) return "";
-    return var->Get<std::string>();
-  }
-};
-#endif
-
-#ifdef LITE_WITH_BM
-template <>
-class Context<TargetType::kBM> {
- public:
-  // NOTE: InitOnce should only be used by ContextScheduler
-  void InitOnce() { TargetWrapperBM::SetDevice(TargetWrapperBM::GetDevice()); }
-  void CopySharedTo(BMContext* ctx) {}
-  void* GetHandle() { return TargetWrapperBM::GetHandle(); }
-
-  std::string name() const { return "BMContext"; }
-};
-#endif
 
 #if defined(LITE_ON_MODEL_OPTIMIZE_TOOL) || defined(LITE_WITH_PYTHON) || \
     defined(LITE_WITH_NNADAPTER)
@@ -380,36 +336,6 @@ class Context<TargetType::kARM> {
 };
 #endif
 
-#ifdef LITE_WITH_FPGA
-// TODO(tianxiaogang): add needed implementation to context
-template <>
-class Context<TargetType::kFPGA> {
- public:
-  void InitOnce() {}
-
-  FPGAContext& operator=(const FPGAContext& ctx) {}
-
-  void CopySharedTo(FPGAContext* ctx) {}
-
-  std::string name() const { return "FPGAContext"; }
-};
-#endif
-
-#ifdef LITE_WITH_INTEL_FPGA
-// TODO(xbeu): add needed implementation to context
-template <>
-class Context<TargetType::kIntelFPGA> {
- public:
-  void InitOnce() {}
-
-  IntelFPGAContext& operator=(const IntelFPGAContext& ctx) {}
-
-  void CopySharedTo(IntelFPGAContext* ctx) {}
-
-  std::string name() const { return "IntelFPGAContext"; }
-};
-#endif
-
 #ifdef LITE_WITH_X86
 template <>
 class Context<TargetType::kX86> {
@@ -529,12 +455,6 @@ class ContextScheduler {
             &ctx->As<ARMContext>());
         break;
 #endif
-#ifdef LITE_WITH_NPU
-      case TARGET(kNPU):
-        kernel_contexts_[TargetType::kNPU].As<NPUContext>().CopySharedTo(
-            &ctx->As<NPUContext>());
-        break;
-#endif
 #ifdef LITE_WITH_XPU
       case TARGET(kXPU):
         kernel_contexts_[TargetType::kXPU].As<XPUContext>().CopySharedTo(
@@ -551,25 +471,6 @@ class ContextScheduler {
       case TARGET(kMetal):
         kernel_contexts_[TargetType::kMetal].As<MTLContext>().CopySharedTo(
             &ctx->As<MTLContext>());
-        break;
-#endif
-#ifdef LITE_WITH_FPGA
-      case TARGET(kFPGA):
-        kernel_contexts_[TargetType::kFPGA].As<FPGAContext>().CopySharedTo(
-            &ctx->As<FPGAContext>());
-        break;
-#endif
-#ifdef LITE_WITH_INTEL_FPGA
-      case TARGET(kIntelFPGA):
-        kernel_contexts_[TargetType::kIntelFPGA]
-            .As<IntelFPGAContext>()
-            .CopySharedTo(&ctx->As<IntelFPGAContext>());
-        break;
-#endif
-#ifdef LITE_WITH_BM
-      case TARGET(kBM):
-        kernel_contexts_[TargetType::kBM].As<BMContext>().CopySharedTo(
-            &ctx->As<BMContext>());
         break;
 #endif
 #if defined(LITE_ON_MODEL_OPTIMIZE_TOOL) || defined(LITE_WITH_PYTHON) || \
@@ -612,20 +513,8 @@ class ContextScheduler {
 #ifdef LITE_WITH_METAL
     InitContext<TargetType::kMetal, MTLContext>();
 #endif
-#ifdef LITE_WITH_FPGA
-    InitContext<TargetType::kFPGA, FPGAContext>();
-#endif
-#ifdef LITE_WITH_INTEL_FPGA
-    InitContext<TargetType::kIntelFPGA, IntelFPGAContext>();
-#endif
-#ifdef LITE_WITH_NPU
-    InitContext<TargetType::kNPU, NPUContext>();
-#endif
 #ifdef LITE_WITH_XPU
     InitContext<TargetType::kXPU, XPUContext>();
-#endif
-#ifdef LITE_WITH_BM
-    InitContext<TargetType::kBM, BMContext>();
 #endif
 #if defined(LITE_ON_MODEL_OPTIMIZE_TOOL) || defined(LITE_WITH_PYTHON) || \
     defined(LITE_WITH_NNADAPTER)

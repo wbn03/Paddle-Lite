@@ -69,15 +69,6 @@ void CxxPaddleApiImpl::Init(const lite_api::CxxConfig &config) {
     }
 #endif
 
-#ifdef LITE_WITH_BM
-    Env<TARGET(kBM)>::Init();
-    int device_id = 0;
-    if (const char *c_id = getenv("BM_VISIBLE_DEVICES")) {
-      device_id = static_cast<int>(*c_id) - 48;
-    }
-    TargetWrapper<TARGET(kBM)>::SetDevice(device_id);
-#endif  // LITE_WITH_BM
-
 #if defined(LITE_ON_MODEL_OPTIMIZE_TOOL) || defined(LITE_WITH_PYTHON) || \
     defined(LITE_WITH_NNADAPTER)
     // Use scope to store the model-level configuration for the subgraph kernel
@@ -146,13 +137,6 @@ void CxxPaddleApiImpl::Init(const lite_api::CxxConfig &config) {
 
 #ifdef LITE_WITH_METAL
   raw_predictor_->ConfigMetalContext(config);
-#endif
-
-#ifdef LITE_WITH_NPU
-  // Store the model-level configuration into scope for kernels, and use
-  // exe_scope to store the execution-level configuration
-  Context<TargetType::kNPU>::SetSubgraphModelCacheDir(
-      raw_predictor_->scope(), config.subgraph_model_cache_dir());
 #endif
 
 #if (defined LITE_WITH_X86) && (defined PADDLE_WITH_MKLML) && \

@@ -92,12 +92,8 @@ add_subdirectory(arm)
 add_subdirectory(cuda)
 add_subdirectory(x86)
 add_subdirectory(opencl)
-add_subdirectory(fpga)
-add_subdirectory(npu)
 add_subdirectory(xpu)
-add_subdirectory(bm)
 add_subdirectory(metal)
-add_subdirectory(intel_fpga)
 add_subdirectory(nnadapter)
 
 #-------------------------------post_process----------------------------------------------------------------

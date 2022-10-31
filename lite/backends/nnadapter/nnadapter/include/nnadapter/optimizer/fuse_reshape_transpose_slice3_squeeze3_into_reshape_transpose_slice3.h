@@ -1,4 +1,4 @@
-// Copyright (c) 2019 PaddlePaddle Authors. All Rights Reserved.
+// Copyright (c) 2022 PaddlePaddle Authors. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,26 +14,11 @@
 
 #pragma once
 
-#include <cstddef>
-#include <fstream>
-#include <iostream>
-#include <string>
-#include <unordered_map>
-#include <vector>
+#include "core/types.h"
 
-namespace paddle {
-namespace zynqmp {
+namespace nnadapter {
 
-struct StrideInfo {
-  StrideInfo() {}
+void FuseReshapeTransposeSlice3Squeeze3IntoReshapeTransposeSlice3(
+    core::Model* model);
 
-  bool wd_enable_ = false;
-  int wd_offset_ = -1;
-  int fuse_idx_ = -1;
-  int original_out_channel_ = -1;
-  int start_idx_ = 0;
-  int end_idx_ = 0;
-};
-
-}  // namespace lite
-}  // namespace paddle
+}  // namespace nnadapter
