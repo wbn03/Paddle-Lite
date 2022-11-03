@@ -120,6 +120,32 @@ class XPUStaticKernelPickPass : public mir::StmtPass {
       }
       VLOG(4) << "[score s3]:" << score;
 
+      if (instruct.op_type() == "scale") {
+        for (auto* out_var_node : node->outlinks) {
+          CHECK(out_var_node->IsArg());
+          auto& var = out_var_node->AsArg();
+          const auto& var_name = var.name;
+          if (var_name == "tmp_234" &&
+              (kernel.place().target == TARGET(kX86) ||
+               kernel.place().target == TARGET(kHost))) {
+            score *= 8;
+          }
+        }
+      }
+
+      if (instruct.op_type() == "assign") {
+        for (auto* out_var_node : node->outlinks) {
+          CHECK(out_var_node->IsArg());
+          auto& var = out_var_node->AsArg();
+          const auto& var_name = var.name;
+          if (var_name == "tmp_234" &&
+              (kernel.place().target == TARGET(kX86) ||
+               kernel.place().target == TARGET(kHost))) {
+            score *= 8;
+          }
+        }
+      }
+
 #ifdef LITE_WITH_XPU
       bool type_match = false;
       GradeXPUKernelScore(node,

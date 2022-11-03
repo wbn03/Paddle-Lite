@@ -52,26 +52,26 @@ void WriteToArrayCompute::Run() {
 }  // namespace lite
 }  // namespace paddle
 
-REGISTER_LITE_KERNEL(write_to_array,
-                     kXPU,
-                     kAny,
-                     kAny,
-                     paddle::lite::kernels::xpu::WriteToArrayCompute,
-                     def)
-    .BindInput("X",
-               {LiteType::GetTensorTy(TARGET(kXPU),
-                                      PRECISION(kAny),
-                                      DATALAYOUT(kAny))})
-    .BindInput("I",
-               {LiteType::GetTensorTy(TARGET(kXPU),
-                                      PRECISION(kInt64),
-                                      DATALAYOUT(kAny))})
-    .BindOutput("Out",
-                {LiteType::GetTensorListTy(TARGET(kXPU),
-                                           PRECISION(kAny),
-                                           DATALAYOUT(kAny))})
-    .BindOutput("FakeAssociatedOut",
-                {LiteType::GetTensorListTy(TARGET(kXPU),
-                                           PRECISION(kAny),
-                                           DATALAYOUT(kAny))})
-    .Finalize();
+// REGISTER_LITE_KERNEL(write_to_array,
+//                      kXPU,
+//                      kAny,
+//                      kAny,
+//                      paddle::lite::kernels::xpu::WriteToArrayCompute,
+//                      def)
+//     .BindInput("X",
+//                {LiteType::GetTensorTy(TARGET(kXPU),
+//                                       PRECISION(kAny),
+//                                       DATALAYOUT(kAny))})
+//     .BindInput("I",
+//                {LiteType::GetTensorTy(TARGET(kXPU),
+//                                       PRECISION(kInt64),
+//                                       DATALAYOUT(kAny))})
+//     .BindOutput("Out",
+//                 {LiteType::GetTensorListTy(TARGET(kXPU),
+//                                            PRECISION(kAny),
+//                                            DATALAYOUT(kAny))})
+//     .BindOutput("FakeAssociatedOut",
+//                 {LiteType::GetTensorListTy(TARGET(kXPU),
+//                                            PRECISION(kAny),
+//                                            DATALAYOUT(kAny))})
+//     .Finalize();

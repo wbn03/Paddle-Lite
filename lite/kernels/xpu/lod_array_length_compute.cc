@@ -38,18 +38,18 @@ void LoDArrayLengthCompute::Run() {
 }  // namespace lite
 }  // namespace paddle
 
-REGISTER_LITE_KERNEL(lod_array_length,
-                     kXPU,
-                     kAny,
-                     kAny,
-                     paddle::lite::kernels::xpu::LoDArrayLengthCompute,
-                     def)
-    .BindInput("X",
-               {LiteType::GetTensorListTy(TARGET(kXPU),
-                                          PRECISION(kAny),
-                                          DATALAYOUT(kAny))})
-    .BindOutput("Out",
-                {LiteType::GetTensorTy(TARGET(kXPU),
-                                       PRECISION(kInt64),
-                                       DATALAYOUT(kAny))})
-    .Finalize();
+// REGISTER_LITE_KERNEL(lod_array_length,
+//                      kXPU,
+//                      kAny,
+//                      kAny,
+//                      paddle::lite::kernels::xpu::LoDArrayLengthCompute,
+//                      def)
+//     .BindInput("X",
+//                {LiteType::GetTensorListTy(TARGET(kXPU),
+//                                           PRECISION(kAny),
+//                                           DATALAYOUT(kAny))})
+//     .BindOutput("Out",
+//                 {LiteType::GetTensorTy(TARGET(kXPU),
+//                                        PRECISION(kInt64),
+//                                        DATALAYOUT(kAny))})
+//     .Finalize();
