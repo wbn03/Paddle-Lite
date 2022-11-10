@@ -136,6 +136,7 @@ void GenerateProposalsCompute::Run() {
 
     // TODO(quwei) : Change TOPK Impl to XPU Version(k1)
     // Since XPU Topk Only Support K <= 512, Select CPU Version Right Now
+    K=200;
     if ((K <= 512 && ctx.GetRawContext()->dev().type() == xdnn::kXPU1) ||
         (K <= 6400 && ctx.GetRawContext()->dev().type() == xdnn::kXPU2)) {
       r = xdnn::sorted_topk(ctx.GetRawContext(),

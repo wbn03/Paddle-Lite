@@ -628,11 +628,17 @@ void RuntimeProgram::Run() {
     inst.Flush(idx);
 #endif
 
-    auto names = inst.op()->op_info()->output_names();
-    for (auto name : names) {
-      VLOG(6) << "output name:" << name;
-    }
-    VLOG(6) << " kernel name:" << inst.kernel()->op_type();
+    // auto names = inst.op()->op_info()->output_names();
+    // for (auto name : names) {
+    //   VLOG(6) << "output name:" << name;
+    // }
+
+    // auto input_names = inst.op()->op_info()->input_names();
+    // for (auto name : input_names) {
+    //   VLOG(6) << "input_names :" << name ;
+    // }
+
+    // VLOG(6) << " kernel name:" << inst.kernel()->op_type();
 
     inst.Run();
   }

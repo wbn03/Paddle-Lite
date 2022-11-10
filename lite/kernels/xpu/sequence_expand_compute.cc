@@ -111,11 +111,11 @@ void SequenceExpandCompute<T, PType>::Run() {
 
 namespace xpu = paddle::lite::kernels::xpu;
 
-using sequence_expand_float32 =
-    paddle::lite::kernels::xpu::SequenceExpandCompute<float, PRECISION(kFloat)>;
-REGISTER_LITE_KERNEL(
-    sequence_expand, kXPU, kFloat, kNCHW, sequence_expand_float32, def)
-    .BindInput("X", {LiteType::GetTensorTy(TARGET(kXPU))})
-    .BindInput("Y", {LiteType::GetTensorTy(TARGET(kXPU))})
-    .BindOutput("Out", {LiteType::GetTensorTy(TARGET(kXPU))})
-    .Finalize();
+// using sequence_expand_float32 =
+//     paddle::lite::kernels::xpu::SequenceExpandCompute<float, PRECISION(kFloat)>;
+// REGISTER_LITE_KERNEL(
+//     sequence_expand, kXPU, kFloat, kNCHW, sequence_expand_float32, def)
+//     .BindInput("X", {LiteType::GetTensorTy(TARGET(kXPU))})
+//     .BindInput("Y", {LiteType::GetTensorTy(TARGET(kXPU))})
+//     .BindOutput("Out", {LiteType::GetTensorTy(TARGET(kXPU))})
+//     .Finalize();

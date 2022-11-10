@@ -122,27 +122,102 @@ class XPUStaticKernelPickPass : public mir::StmtPass {
 
       if (instruct.op_type() == "scale") {
         for (auto* out_var_node : node->outlinks) {
+          VLOG(6) << "scale out name:"<<out_var_node->AsArg().name;
           CHECK(out_var_node->IsArg());
-          auto& var = out_var_node->AsArg();
-          const auto& var_name = var.name;
-          if (var_name == "tmp_234" &&
-              (kernel.place().target == TARGET(kX86) ||
-               kernel.place().target == TARGET(kHost))) {
+          if(out_var_node->outlinks.empty()){
+            continue;
+          }
+
+          auto& next_op_inst=out_var_node->outlinks.front()->AsStmt();
+          VLOG(6) << "next_op_inst.op_type():" << next_op_inst.op_type();
+          if(next_op_inst.op_type()=="while")
+          {
+            if (kernel.place().target == TARGET(kX86) ||
+               kernel.place().target == TARGET(kHost)) {
             score *= 8;
+            VLOG(6) << "scale out name2:"<<out_var_node->AsArg().name;
+          }
+          
           }
         }
       }
 
+      // if (instruct.op_type() == "assign") {
+      //   for (auto* out_var_node : node->outlinks) {
+      //     VLOG(6) << "assign out name:"<<out_var_node->AsArg().name;
+      //     CHECK(out_var_node->IsArg());
+      //     if(out_var_node->outlinks.empty()){
+      //       VLOG(6) << "assign out_var_node link  is empty.";
+      //       continue;
+      //     }
+
+      //     for(auto& next_op:  out_var_node->outlinks){
+      //       auto& next_op_inst = next_op->AsStmt();
+      //        VLOG(6) << "assign next_op_inst.op_type():" << next_op_inst.op_type();
+      //       if(next_op_inst.op_type()=="conditional_block")
+      //       {
+      //         if (kernel.place().target == TARGET(kX86) ||
+      //           kernel.place().target == TARGET(kHost)) {
+      //         score *= 8;
+      //         VLOG(6) << "assign out name2:"<<out_var_node->AsArg().name;
+      //         break;
+      //       }
+            
+      //       }
+      //     }
+      //     //auto& next_op_inst=out_var_node->outlinks.front()->AsStmt();
+         
+      //   }
+      // }
+
+     std::set<std::string> var_name{"multiclass_nms3_0.tmp_2","multiclass_nms3_0.tmp_0"};
       if (instruct.op_type() == "assign") {
-        for (auto* out_var_node : node->outlinks) {
-          CHECK(out_var_node->IsArg());
-          auto& var = out_var_node->AsArg();
-          const auto& var_name = var.name;
-          if (var_name == "tmp_234" &&
-              (kernel.place().target == TARGET(kX86) ||
-               kernel.place().target == TARGET(kHost))) {
+         for (auto* in_var_node : node->inlinks) {
+          CHECK(in_var_node->IsArg());
+          VLOG(6) << "in_var_node->AsArg().name:" << in_var_node->AsArg().name;
+         if(var_name.count(in_var_node->AsArg().name))
+          {
+            if (kernel.place().target == TARGET(kX86) ||
+               kernel.place().target == TARGET(kHost)) {
+            score *= 8;
+            VLOG(6) << "assign pick host op";
+            }
+          }
+          
+         }
+      }
+
+      if (instruct.op_type() == "slice") {
+         for (auto* in_var_node : node->inlinks) {
+          CHECK(in_var_node->IsArg());
+          VLOG(6) << "in_var_node->AsArg().name:" << in_var_node->AsArg().name;
+         if(var_name.count(in_var_node->AsArg().name)){
+
+          if (kernel.place().target == TARGET(kX86) ||
+               kernel.place().target == TARGET(kHost)) {
+            score *= 8;
+            VLOG(6) << "slice pick host op";
+            }
+            }
+         }
+      }
+
+      if (instruct.op_type() == "assign") {
+        for (auto* in_var_node : node->inlinks) {
+          CHECK(in_var_node->IsArg());
+          if(in_var_node->inlinks.empty()){
+            continue;
+          }
+          auto& pre_op_inst = in_var_node->inlinks.front()->AsStmt();
+          if(pre_op_inst.op_type()=="set_value")
+          {
+            if (kernel.place().target == TARGET(kX86) ||
+               kernel.place().target == TARGET(kHost)) {
             score *= 8;
           }
+
+          }
+          
         }
       }
 
